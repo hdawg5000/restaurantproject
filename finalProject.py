@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -11,6 +11,22 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+#API endpoint that lists all restaurants in the database in JSON format
+@app.route('/restaurants.json')
+def restaurantsJSON():
+    restaurants = session.query(Restaurant).all()
+    return jsonify(Restaurants=[i.serialize for i in restaurants])
+
+@app.route('/restaurants/<int:restaurant_id>/menu.json')
+def restaurantMenuJSON(restaurant_id):
+    restaurantMenu = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
+    return jsonify(MenuItems = [i.serialize for i in restaurantMenu])
+
+@app.route('/restaurants/<int:restaurant_id>/menu/<int:menu_id>.json')
+def menuItemJSON(restaurant_id, menu_id):
+    menuItem = session.query(MenuItem).filter_by(id=menu_id).one()
+    return jsonify(MenuItem = [menuItem.serialize])
 
 #Show all restaurants
 @app.route('/')
