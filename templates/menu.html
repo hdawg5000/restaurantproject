@@ -2,10 +2,18 @@
   <body>
     <h1>{{restaurant.name}}'s Menu</h1>
       <a href="{{url_for('newMenuItem', restaurant_id=restaurant.id)}}">Create new menu item</a>
-      {% for item in items %}
-        <p>{{item.name}}</p>
-        <p>{{item.description}}</p>
-        <p>{{item.price}}</p>
-      {% endfor %}
+      {% if items.count() == 0 %}
+        <p>
+          You currently have no menu items.
+        </p>
+      {% else %}
+        {% for item in items %}
+          <p>{{item.name}}</p>
+          <p>{{item.description}}</p>
+          <p>{{item.price}}</p>
+          <a href="{{url_for('editMenuItem', restaurant_id=restaurant.id, menu_id=item.id)}}">Edit</a></br>
+          <a href="{{url_for('deleteMenuItem', restaurant_id=restaurant.id, menu_id=item.id)}}">Delete</a></br>
+        {% endfor %}
+      {% endif %}
   </body>
 </html>
